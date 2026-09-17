@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { bloodRequestService } from '../services/bloodRequestService';
+import { cloudSync } from '../services/cloudSync';
 import BloodRequestForm from '../components/requests/BloodRequestForm';
 import DonorMatchingList from '../components/requests/DonorMatchingList';
 
@@ -21,6 +22,13 @@ const RequestPage = () => {
       const profile = authService.getCurrentUserProfile();
       setCurrentUserProfile(profile);
       fetchRequests();
+
+      const unsubscribe = cloudSync.subscribe(() => {
+        const freshProfile = authService.getCurrentUserProfile();
+        setCurrentUserProfile(freshProfile);
+        fetchRequests();
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

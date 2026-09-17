@@ -96,9 +96,12 @@ function getUsersDB() {
   return db;
 }
 
-// Helper to save users database to localStorage
+import { cloudSync } from './cloudSync';
+
+// Helper to save users database to localStorage and sync to cloud
 function saveUsersDB(db) {
   localStorage.setItem('blood_donation_users_db', JSON.stringify(db));
+  cloudSync.pushToCloud();
 }
 
 // Simulates API network delay (e.g. 1 second)

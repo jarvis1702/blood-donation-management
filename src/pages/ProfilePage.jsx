@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { cloudSync } from '../services/cloudSync';
 import ProfileForm from '../components/profile/ProfileForm';
 import DonorRegistrationModal from '../components/profile/DonorRegistrationModal';
 
@@ -16,6 +17,12 @@ const ProfilePage = () => {
       navigate('/login');
     } else {
       loadProfile();
+
+      const unsubscribe = cloudSync.subscribe(() => {
+        const data = authService.getCurrentUserProfile();
+        setProfile(data);
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { bloodRequestService } from '../services/bloodRequestService';
+import { cloudSync } from '../services/cloudSync';
 import DonorRegistrationModal from '../components/profile/DonorRegistrationModal';
 
 const Dashboard = () => {
@@ -23,6 +24,13 @@ const Dashboard = () => {
       fetchRequests();
       loadAllDonors();
       setLoading(false);
+
+      const unsubscribe = cloudSync.subscribe(() => {
+        loadProfileData();
+        fetchRequests();
+        loadAllDonors();
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

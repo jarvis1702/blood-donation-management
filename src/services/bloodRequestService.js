@@ -8,9 +8,12 @@ function getRequestsDB() {
   return requests ? JSON.parse(requests) : [];
 }
 
-// Helper to save requests to localStorage
+import { cloudSync } from './cloudSync';
+
+// Helper to save requests to localStorage and push to cloud
 function saveRequestsDB(db) {
   localStorage.setItem('blood_requests_db', JSON.stringify(db));
+  cloudSync.pushToCloud();
 }
 
 // Helper to get users database (donors)
