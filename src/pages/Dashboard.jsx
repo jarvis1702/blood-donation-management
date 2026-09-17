@@ -331,7 +331,7 @@ const Dashboard = () => {
         {/* ADMIN / CLUB MEMBER PANELS: Registered Donor Management Roster */}
         {isAdminOrClub && (
           <div className="dashboard-card" style={{marginTop: '2rem'}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem'}}>
+            <div className="admin-roster-header-bar" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem'}}>
               <div>
                 <h3 style={{border: 'none', padding: 0, margin: 0}}>🛡️ Admin / Club Donor Management Roster</h3>
                 <p style={{fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.25rem'}}>
