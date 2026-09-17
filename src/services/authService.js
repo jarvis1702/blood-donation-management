@@ -99,9 +99,13 @@ function getUsersDB() {
 import { cloudSync } from './cloudSync';
 
 // Helper to save users database to localStorage and sync to cloud
-function saveUsersDB(db) {
+function saveUsersDB(db, userKey) {
   localStorage.setItem('blood_donation_users_db', JSON.stringify(db));
-  cloudSync.pushToCloud();
+  if (userKey && db[userKey]) {
+    cloudSync.syncUser(db[userKey]);
+  } else {
+    cloudSync.pushToCloud();
+  }
 }
 
 // Simulates API network delay (e.g. 1 second)
@@ -149,7 +153,7 @@ export const authService = {
       createdAt: new Date().toISOString()
     };
     
-    saveUsersDB(db);
+    saveUsersDB(db, emailKey);
     
     return {
       success: true,
@@ -267,7 +271,7 @@ export const authService = {
       role: profileData.role || user.role || 'Student'
     };
 
-    saveUsersDB(db);
+    saveUsersDB(db, emailKey);
 
     // Update active session user name if updated
     localStorage.setItem('blood_donation_session_user', JSON.stringify({
@@ -318,7 +322,7 @@ export const authService = {
       eligibility: eligibility
     };
 
-    saveUsersDB(db);
+    saveUsersDB(db, emailKey);
 
     return {
       success: true,
@@ -347,7 +351,7 @@ export const authService = {
       availability: status
     };
 
-    saveUsersDB(db);
+    saveUsersDB(db, emailKey);
 
     return {
       success: true,

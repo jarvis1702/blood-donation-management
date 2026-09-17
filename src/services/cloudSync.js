@@ -1,24 +1,19 @@
 /**
- * Real-time Cloud Sync Service for KCT LifeFlow
- * Connects local storage to a central Cloud API (restful-api.dev)
- * to ensure all users, admins, and devices share live updates instantaneously.
+ * Live Multi-Device Cloud Sync Service for KCT LifeFlow
+ * Connects all devices & users via a shared REST API endpoint (crudcrud.com)
  */
 
-const CLOUD_OBJECT_ID = 'ff808181a09d98f701a0adf88beb2349';
-const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_OBJECT_ID}`;
+const API_BASE = 'https://crudcrud.com/api/8d2e0e312d8d4308b0b7c74c4ae66c1b';
 
-// BroadcastChannel for instant cross-tab sync on the same device
 const broadcast = typeof window !== 'undefined' && 'BroadcastChannel' in window 
   ? new BroadcastChannel('kct_lifeflow_sync_channel')
   : null;
 
-let isSyncing = false;
+let isPulling = false;
+let isPushing = false;
 let syncListeners = [];
 
 export const cloudSync = {
-  /**
-   * Register listener for cloud sync updates
-   */
   subscribe: (callback) => {
     syncListeners.push(callback);
     return () => {
@@ -36,103 +31,155 @@ export const cloudSync = {
   },
 
   /**
-   * Pulls latest database state from Cloud API into LocalStorage
+   * Pulls all users and requests from the cloud database
    */
   pullFromCloud: async () => {
-    if (isSyncing) return;
-    isSyncing = true;
+    if (isPulling) return;
+    isPulling = true;
     try {
-      const response = await fetch(CLOUD_API_URL);
-      if (response.ok) {
-        const json = await response.json();
-        if (json && json.data) {
-          const cloudData = json.data;
-          
-          let localUsers = JSON.parse(localStorage.getItem('blood_donation_users_db') || '{}');
-          let localRequests = JSON.parse(localStorage.getItem('blood_requests_db') || '[]');
+      // 1. Fetch Cloud Users
+      const usersRes = await fetch(`${API_BASE}/users`);
+      let cloudUsers = [];
+      if (usersRes.ok) {
+        cloudUsers = await usersRes.json();
+      }
 
-          // Merge Users (Cloud wins if updated, but keep local additions)
-          const mergedUsers = { ...localUsers, ...(cloudData.users || {}) };
-          
-          // Merge Requests (Cloud requests merged with local)
-          const requestMap = new Map();
-          (cloudData.requests || []).forEach(r => requestMap.set(r.id, r));
-          localRequests.forEach(r => {
-            if (!requestMap.has(r.id)) {
-              requestMap.set(r.id, r);
-            } else {
-              // Update status/volunteers if local has changes
-              const cloudReq = requestMap.get(r.id);
-              if (r.status !== cloudReq.status || (r.volunteeredDonors && r.volunteeredDonors.length !== (cloudReq.volunteeredDonors || []).length)) {
-                requestMap.set(r.id, { ...cloudReq, ...r });
-              }
-            }
-          });
-          const mergedRequests = Array.from(requestMap.values());
+      // 2. Fetch Cloud Requests
+      const reqsRes = await fetch(`${API_BASE}/requests`);
+      let cloudRequests = [];
+      if (reqsRes.ok) {
+        cloudRequests = await reqsRes.json();
+      }
 
-          // Save to LocalStorage
-          localStorage.setItem('blood_donation_users_db', JSON.stringify(mergedUsers));
-          localStorage.setItem('blood_requests_db', JSON.stringify(mergedRequests));
+      // 3. Merge Users into LocalStorage
+      let localUsers = JSON.parse(localStorage.getItem('blood_donation_users_db') || '{}');
+      let updatedLocal = false;
 
-          // If current logged-in user profile updated in cloud, refresh session
-          const sessionUser = JSON.parse(localStorage.getItem('blood_donation_session_user') || 'null');
-          if (sessionUser && sessionUser.email && mergedUsers[sessionUser.email]) {
-            const updatedProfile = mergedUsers[sessionUser.email];
-            if (sessionUser.name !== updatedProfile.name) {
-              localStorage.setItem('blood_donation_session_user', JSON.stringify({
-                name: updatedProfile.name,
-                email: updatedProfile.email
-              }));
+      cloudUsers.forEach(u => {
+        if (u.email) {
+          const emailKey = u.email.toLowerCase().trim();
+          if (!localUsers[emailKey] || new Date(u.updatedAt || 0) > new Date(localUsers[emailKey].updatedAt || 0)) {
+            const { _id, ...cleanUserData } = u;
+            localUsers[emailKey] = { ...localUsers[emailKey], ...cleanUserData };
+            updatedLocal = true;
+          }
+        }
+      });
+
+      // 4. Merge Requests into LocalStorage
+      let localRequests = JSON.parse(localStorage.getItem('blood_requests_db') || '[]');
+      const localReqMap = new Map();
+      localRequests.forEach(r => localReqMap.set(r.id, r));
+
+      cloudRequests.forEach(r => {
+        if (r.id) {
+          const existing = localReqMap.get(r.id);
+          const { _id, ...cleanReqData } = r;
+          if (!existing) {
+            localReqMap.set(r.id, cleanReqData);
+            updatedLocal = true;
+          } else {
+            // Update status / volunteers if changed
+            if (existing.status !== cleanReqData.status || 
+                (cleanReqData.volunteeredDonors && cleanReqData.volunteeredDonors.length !== (existing.volunteeredDonors || []).length)) {
+              localReqMap.set(r.id, { ...existing, ...cleanReqData });
+              updatedLocal = true;
             }
           }
-
-          cloudSync.notifyListeners();
         }
+      });
+
+      if (updatedLocal) {
+        localStorage.setItem('blood_donation_users_db', JSON.stringify(localUsers));
+        localStorage.setItem('blood_requests_db', JSON.stringify(Array.from(localReqMap.values())));
+        cloudSync.notifyListeners();
       }
     } catch (err) {
-      console.warn('Cloud sync pull warning (using local cache):', err);
+      console.warn('Cloud sync pull warning:', err);
     } finally {
-      isSyncing = false;
+      isPulling = false;
     }
   },
 
   /**
-   * Pushes current LocalStorage state up to the Cloud API
+   * Syncs a specific user to the cloud database
+   */
+  syncUser: async (userData) => {
+    if (!userData || !userData.email) return;
+    try {
+      const emailKey = userData.email.toLowerCase().trim();
+      const payload = {
+        ...userData,
+        email: emailKey,
+        updatedAt: new Date().toISOString()
+      };
+
+      // POST user record to cloud
+      await fetch(`${API_BASE}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      cloudSync.pullFromCloud();
+    } catch (err) {
+      console.warn('Cloud user sync error:', err);
+    }
+  },
+
+  /**
+   * Syncs a blood request to the cloud database
+   */
+  syncRequest: async (requestData) => {
+    if (!requestData || !requestData.id) return;
+    try {
+      const payload = {
+        ...requestData,
+        updatedAt: new Date().toISOString()
+      };
+
+      await fetch(`${API_BASE}/requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      cloudSync.pullFromCloud();
+    } catch (err) {
+      console.warn('Cloud request sync error:', err);
+    }
+  },
+
+  /**
+   * Syncs all local users and requests to the cloud
    */
   pushToCloud: async () => {
+    if (isPushing) return;
+    isPushing = true;
     try {
       const users = JSON.parse(localStorage.getItem('blood_donation_users_db') || '{}');
       const requests = JSON.parse(localStorage.getItem('blood_requests_db') || '[]');
 
-      await fetch(CLOUD_API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: 'KCT_BLOOD_DONATION_DB',
-          data: {
-            users,
-            requests,
-            lastUpdated: new Date().toISOString()
-          }
-        })
-      });
+      // Push users
+      for (const u of Object.values(users)) {
+        await cloudSync.syncUser(u);
+      }
 
-      cloudSync.notifyListeners();
+      // Push requests
+      for (const r of requests) {
+        await cloudSync.syncRequest(r);
+      }
     } catch (err) {
-      console.warn('Cloud sync push warning (saved to local cache):', err);
+      console.warn('Full push warning:', err);
+    } finally {
+      isPushing = false;
     }
   },
 
-  /**
-   * Initialize background sync polling & cross-tab messaging
-   */
   init: () => {
-    // Initial pull from cloud
+    // Initial pull
     cloudSync.pullFromCloud();
 
-    // Listen to BroadcastChannel messages from other tabs
     if (broadcast) {
       broadcast.onmessage = (event) => {
         if (event.data && event.data.type === 'DATA_SYNC') {
@@ -143,19 +190,14 @@ export const cloudSync = {
       };
     }
 
-    // Window focus sync
     if (typeof window !== 'undefined') {
-      window.addEventListener('focus', () => {
-        cloudSync.pullFromCloud();
-      });
-      window.addEventListener('storage', () => {
-        cloudSync.notifyListeners();
-      });
+      window.addEventListener('focus', () => cloudSync.pullFromCloud());
+      window.addEventListener('storage', () => cloudSync.notifyListeners());
     }
 
-    // Auto-poll every 6 seconds for live multi-device admin updates
+    // Auto-poll cloud database every 4 seconds for live admin & donor updates
     setInterval(() => {
       cloudSync.pullFromCloud();
-    }, 6000);
+    }, 4000);
   }
 };
