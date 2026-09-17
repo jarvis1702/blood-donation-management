@@ -21,31 +21,35 @@ const RequestPage = () => {
     } else {
       const profile = authService.getCurrentUserProfile();
       setCurrentUserProfile(profile);
-      fetchRequests();
+      fetchRequests(false);
 
       const unsubscribe = cloudSync.subscribe(() => {
         const freshProfile = authService.getCurrentUserProfile();
         setCurrentUserProfile(freshProfile);
-        fetchRequests();
+        fetchRequests(true);
       });
       return () => unsubscribe();
     }
   }, [navigate]);
 
-  const fetchRequests = async () => {
-    setLoading(true);
+  const fetchRequests = async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
     try {
       const res = await bloodRequestService.getRequests();
       setRequests(res);
+      setSelectedRequest((prev) => {
+        if (!prev) return null;
+        return res.find((r) => r.id === prev.id) || prev;
+      });
     } catch (err) {
       console.error('Error fetching requests:', err);
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
   const handleRequestCreated = (newRequest) => {
-    fetchRequests();
+    fetchRequests(true);
     setSelectedRequest(newRequest);
     setActiveTab('list');
   };
@@ -268,7 +272,7 @@ const RequestPage = () => {
                 onClose={() => setSelectedRequest(null)}
                 onRequestUpdated={(updatedReq) => {
                   setSelectedRequest(updatedReq);
-                  fetchRequests();
+                  fetchRequests(true);
                 }}
               />
             </div>

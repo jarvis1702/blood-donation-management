@@ -121,14 +121,28 @@ export const cloudSync = {
 
       // 3. Merge Users into LocalStorage
       let localUsers = JSON.parse(localStorage.getItem('blood_donation_users_db') || '{}');
-      let updatedLocal = false;
+      let usersChanged = false;
 
       cloudUsers.forEach(u => {
         if (u.email) {
           const emailKey = u.email.toLowerCase().trim();
-          if (!localUsers[emailKey] || new Date(u.updatedAt || 0) >= new Date(localUsers[emailKey].updatedAt || 0)) {
-            localUsers[emailKey] = { ...localUsers[emailKey], ...u };
-            updatedLocal = true;
+          const existing = localUsers[emailKey];
+          if (!existing) {
+            localUsers[emailKey] = u;
+            usersChanged = true;
+          } else {
+            const cloudTime = new Date(u.updatedAt || 0).getTime();
+            const localTime = new Date(existing.updatedAt || 0).getTime();
+            if (cloudTime > localTime) {
+              localUsers[emailKey] = { ...existing, ...u };
+              usersChanged = true;
+            } else if (cloudTime === localTime) {
+              const merged = { ...existing, ...u };
+              if (JSON.stringify(existing) !== JSON.stringify(merged)) {
+                localUsers[emailKey] = merged;
+                usersChanged = true;
+              }
+            }
           }
         }
       });
@@ -137,23 +151,43 @@ export const cloudSync = {
       let localRequests = JSON.parse(localStorage.getItem('blood_requests_db') || '[]');
       const localReqMap = new Map();
       localRequests.forEach(r => localReqMap.set(r.id, r));
+      let requestsChanged = false;
 
       cloudRequests.forEach(r => {
         if (r.id) {
           const existing = localReqMap.get(r.id);
-          if (!existing || new Date(r.updatedAt || 0) >= new Date(existing.updatedAt || 0)) {
-            localReqMap.set(r.id, { ...existing, ...r });
-            updatedLocal = true;
+          if (!existing) {
+            localReqMap.set(r.id, r);
+            requestsChanged = true;
+          } else {
+            const cloudTime = new Date(r.updatedAt || 0).getTime();
+            const localTime = new Date(existing.updatedAt || 0).getTime();
+            if (cloudTime > localTime) {
+              localReqMap.set(r.id, { ...existing, ...r });
+              requestsChanged = true;
+            } else if (cloudTime === localTime) {
+              const merged = { ...existing, ...r };
+              if (JSON.stringify(existing) !== JSON.stringify(merged)) {
+                localReqMap.set(r.id, merged);
+                requestsChanged = true;
+              }
+            }
           }
         }
       });
 
-      if (updatedLocal) {
+      if (usersChanged) {
         localStorage.setItem('blood_donation_users_db', JSON.stringify(localUsers));
-        const sorted = Array.from(localReqMap.values()).sort((a,b) => {
+      }
+
+      if (requestsChanged) {
+        const sorted = Array.from(localReqMap.values()).sort((a, b) => {
           return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         });
         localStorage.setItem('blood_requests_db', JSON.stringify(sorted));
+      }
+
+      if (usersChanged || requestsChanged) {
         cloudSync.notifyListeners();
       }
     } catch (err) {
@@ -250,12 +284,16 @@ export const cloudSync = {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('focus', () => cloudSync.pullFromCloud());
+      window.addEventListener('visibilitychange', () => {
+        if (!document.hidden) cloudSync.pullFromCloud();
+      });
       window.addEventListener('storage', () => cloudSync.notifyListeners());
     }
 
-    // Auto-poll Firestore every 3 seconds for instant real-time multi-device sync
+    // Auto-poll Firestore every 4 seconds when tab is active for instant real-time multi-device sync
     setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       cloudSync.pullFromCloud();
-    }, 3000);
+    }, 4000);
   }
 };
