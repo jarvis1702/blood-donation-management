@@ -8,12 +8,12 @@ const Register = () => {
       <div className="auth-sidebar">
         <div className="auth-sidebar-overlay"></div>
         <div className="auth-sidebar-content">
-          <div className="auth-logo">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#ff4d4d" stroke="#d32f2f"/>
-              <path d="M12 6V18" stroke="white" strokeWidth="3"/>
-              <path d="M8 12H16" stroke="white" strokeWidth="3"/>
-            </svg>
+          <div className="auth-logo" style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+            <img 
+              src="/kct-logo.png" 
+              alt="KCT Logo" 
+              style={{width: '46px', height: '46px', borderRadius: '8px', objectFit: 'contain', boxShadow: '0 2px 8px rgba(0,0,0,0.15)'}} 
+            />
             <span className="logo-text">KCT LifeFlow</span>
           </div>
           
