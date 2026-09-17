@@ -58,10 +58,6 @@ const LoginForm = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const handleQuickFill = (email, password) => {
-    setFormData({ email, password });
-    setTouched({ email: true, password: true });
-  };
 
   const handleForgotPassword = (e) => {
     e.preventDefault();
@@ -103,44 +99,7 @@ const LoginForm = () => {
         <p>Access your KCT Blood Donor portal</p>
       </div>
 
-      {/* Demo Credentials Quick-Fill Panel */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-base)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-md)',
-        padding: '0.875rem 1rem',
-        marginBottom: '1.25rem'
-      }}>
-        <span style={{fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.5rem'}}>
-          ⚡ Quick Demo & Admin Logins
-        </span>
-        <div style={{display: 'flex', gap: '0.5rem', flexWrap: 'wrap'}}>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => handleQuickFill('admin@kct.ac.in', 'Password123')}
-            style={{fontSize: '0.75rem', padding: '0.3rem 0.6rem'}}
-          >
-            🛡️ Admin (`admin@kct.ac.in`)
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => handleQuickFill('club@kct.ac.in', 'Password123')}
-            style={{fontSize: '0.75rem', padding: '0.3rem 0.6rem'}}
-          >
-            🚩 Club Member (`club@kct.ac.in`)
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => handleQuickFill('suresh@kct.ac.in', 'Password123')}
-            style={{fontSize: '0.75rem', padding: '0.3rem 0.6rem'}}
-          >
-            👤 Student (`suresh@kct.ac.in`)
-          </button>
-        </div>
-      </div>
+
 
       {submitError && (
         <div className="alert alert-error" role="alert">
