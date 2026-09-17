@@ -259,18 +259,20 @@ const RequestPage = () => {
           </div>
         </div>
 
-        {/* Smart Matching Drawer Sidebar Panel */}
+        {/* Smart Matching Drawer Modal / Slide-over Overlay */}
         {selectedRequest && (
-          <aside className="sidebar-drawer-matching active">
-            <DonorMatchingList 
-              request={selectedRequest} 
-              onClose={() => setSelectedRequest(null)}
-              onRequestUpdated={(updatedReq) => {
-                setSelectedRequest(updatedReq);
-                fetchRequests();
-              }}
-            />
-          </aside>
+          <div className="drawer-overlay-backdrop" onClick={() => setSelectedRequest(null)}>
+            <div className="drawer-slideover-container" onClick={(e) => e.stopPropagation()}>
+              <DonorMatchingList 
+                request={selectedRequest} 
+                onClose={() => setSelectedRequest(null)}
+                onRequestUpdated={(updatedReq) => {
+                  setSelectedRequest(updatedReq);
+                  fetchRequests();
+                }}
+              />
+            </div>
+          </div>
         )}
       </main>
     </div>

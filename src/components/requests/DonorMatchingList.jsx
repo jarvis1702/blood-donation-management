@@ -231,61 +231,43 @@ const DonorMatchingList = ({ request, onClose, onRequestUpdated }) => {
                 </p>
               </div>
             ) : (
-              <div className="donors-table-wrapper">
-                <table className="donors-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Blood Group</th>
-                      <th>Availability</th>
-                      <th>Eligibility Status</th>
-                      <th>Coordinate Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {matchingData.matches.map((donor) => (
-                      <tr key={donor.email}>
-                        <td>
-                          <div className="donor-info-cell">
-                            <span className="donor-name-text">{donor.name}</span>
-                            <span className="donor-email-text">{donor.email}</span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="table-blood-group-badge">{donor.bloodGroup}</span>
-                        </td>
-                        <td>
-                          <span className="status-badge status-available">
-                            {donor.availability}
+              <div className="matching-donor-cards-list">
+                {matchingData.matches.map((donor) => (
+                  <div key={donor.email} className="matching-donor-card">
+                    <div className="donor-card-main-info">
+                      <div className="donor-card-left">
+                        <span className="table-blood-group-badge">{donor.bloodGroup}</span>
+                        <div>
+                          <div className="donor-name-text">{donor.name}</div>
+                          <div className="donor-email-text">{donor.email}</div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleNotifyDonor(donor.email, donor.name)}
+                        className={`btn btn-sm ${notifiedDonors[donor.email] ? 'btn-outline' : 'btn-primary'}`}
+                        disabled={notifiedDonors[donor.email]}
+                        style={{whiteSpace: 'nowrap'}}
+                      >
+                        {notifiedDonors[donor.email] ? (
+                          <span className="notified-text">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{marginRight: '4px'}}>
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Coordinated
                           </span>
-                        </td>
-                        <td>
-                          <span className="status-badge status-eligible">
-                            {donor.eligibility}
-                          </span>
-                        </td>
-                        <td>
-                          <button
-                            onClick={() => handleNotifyDonor(donor.email, donor.name)}
-                            className={`btn btn-sm ${notifiedDonors[donor.email] ? 'btn-outline' : 'btn-primary'}`}
-                            disabled={notifiedDonors[donor.email]}
-                          >
-                            {notifiedDonors[donor.email] ? (
-                              <span className="notified-text">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{marginRight: '4px'}}>
-                                  <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Coordinated
-                              </span>
-                            ) : (
-                              'Coordinate Match'
-                            )}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        ) : (
+                          'Coordinate Match'
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="donor-card-status-badges">
+                      <span className="status-badge status-available">⚡ {donor.availability}</span>
+                      <span className="status-badge status-eligible">🛡️ {donor.eligibility}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
