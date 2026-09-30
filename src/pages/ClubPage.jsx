@@ -381,7 +381,7 @@ const ClubPage = () => {
                   />
                 </div>
 
-                <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-row camp-form-grid">
                   <div className="form-group">
                     <label>Organizing Club</label>
                     <select 
@@ -409,7 +409,7 @@ const ClubPage = () => {
                   </div>
                 </div>
 
-                <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-row camp-form-grid">
                   <div className="form-group">
                     <label>Drive Date *</label>
                     <input 
@@ -433,7 +433,7 @@ const ClubPage = () => {
                   </div>
                 </div>
 
-                <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="form-row camp-form-grid">
                   <div className="form-group">
                     <label>Target Blood Units (Pints) *</label>
                     <input 
