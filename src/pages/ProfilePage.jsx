@@ -4,6 +4,7 @@ import { authService } from '../services/authService';
 import { cloudSync } from '../services/cloudSync';
 import ProfileForm from '../components/profile/ProfileForm';
 import DonorRegistrationModal from '../components/profile/DonorRegistrationModal';
+import Navbar from '../components/common/Navbar';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -69,25 +70,9 @@ const ProfilePage = () => {
   return (
     <div className="dashboard-container">
       {/* Navbar */}
-      <header className="dashboard-header">
-        <div className="dashboard-logo" onClick={() => navigate('/dashboard')} style={{cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.65rem'}}>
-          <img 
-            src="/kct-logo.png" 
-            alt="KCT Logo" 
-            style={{width: '36px', height: '36px', borderRadius: '6px', objectFit: 'contain'}} 
-          />
-          <span className="logo-text">KCT LifeFlow</span>
-        </div>
+      <Navbar activePage="/profile" />
 
-        <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-          <button onClick={() => navigate('/dashboard')} className="btn btn-outline btn-sm">
-            Dashboard
-          </button>
-          <button onClick={() => navigate('/requests')} className="btn btn-outline btn-sm">
-            Blood Requests
-          </button>
-        </div>
-      </header>
+      {/* Profile Main Body */}
 
       {/* Profile Main Body */}
       <main className="dashboard-main">

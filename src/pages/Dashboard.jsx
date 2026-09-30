@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { bloodRequestService } from '../services/bloodRequestService';
 import { cloudSync } from '../services/cloudSync';
+import Navbar from '../components/common/Navbar';
 import DonorRegistrationModal from '../components/profile/DonorRegistrationModal';
 
 const Dashboard = () => {
@@ -119,37 +120,9 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       {/* Header / Navbar */}
-      <header className="dashboard-header">
-        <div className="dashboard-logo" onClick={() => navigate('/dashboard')} style={{cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.65rem'}}>
-          <img 
-            src="/kct-logo.png" 
-            alt="KCT Logo" 
-            style={{width: '36px', height: '36px', borderRadius: '6px', objectFit: 'contain'}} 
-          />
-          <span className="logo-text">KCT LifeFlow</span>
-        </div>
-        
-        <div className="user-profile-menu">
-          {isAdminOrClub && (
-            <span className="badge badge-danger" style={{marginRight: '0.5rem'}}>
-              🛡️ {profile.role || 'Admin'} Access
-            </span>
-          )}
-          <button onClick={() => navigate('/profile')} className="btn btn-outline btn-sm" style={{display: 'flex', alignItems: 'center', gap: '0.4rem'}}>
-            <div className="user-avatar" style={{width: '24px', height: '24px', fontSize: '0.75rem'}}>
-              {profile.name.charAt(0).toUpperCase()}
-            </div>
-            <span>Profile & Settings</span>
-          </button>
-          <button 
-            onClick={handleLogout} 
-            className="btn btn-outline btn-sm logout-btn"
-            disabled={logoutLoading}
-          >
-            {logoutLoading ? 'Logging out...' : 'Logout'}
-          </button>
-        </div>
-      </header>
+      <Navbar activePage="/dashboard" />
+
+      {/* Dashboard Body */}
 
       {/* Dashboard Body */}
       <main className="dashboard-main">
@@ -280,6 +253,24 @@ const Dashboard = () => {
                   <div>
                     <span className="resource-title">Profile Management (US-03)</span>
                     <span className="resource-desc">Update contact details, role, and donor preferences.</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="/camps" onClick={(e) => { e.preventDefault(); navigate('/camps'); }}>
+                  <span className="resource-icon">🎪</span>
+                  <div>
+                    <span className="resource-title">Campus Blood Donation Camps (SCRUM-20, 21)</span>
+                    <span className="resource-desc">Book donation time slots or volunteer for upcoming campus drives.</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="/club" onClick={(e) => { e.preventDefault(); navigate('/club'); }}>
+                  <span className="resource-icon">🛡️</span>
+                  <div>
+                    <span className="resource-title">YRC Club Governance Command Center (SCRUM-22)</span>
+                    <span className="resource-desc">Schedule campus blood camps and coordinate volunteer duty rosters.</span>
                   </div>
                 </a>
               </li>

@@ -1,0 +1,140 @@
+{
+  "id": "kct-lifeflow-selenium-workflow",
+  "version": "2.0",
+  "name": "KCT_LifeFlow_Automated_Workflow_Testing",
+  "url": "https://blood-donation-management.onrender.com",
+  "tests": [{
+    "id": "workflow-test-01",
+    "name": "Emergency_Blood_Request_Workflow",
+    "commands": [{
+      "id": "cmd-1",
+      "comment": "Open Login Page",
+      "command": "open",
+      "target": "/login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "cmd-2",
+      "comment": "Enter Admin Email",
+      "command": "type",
+      "target": "name=email",
+      "targets": [["name=email", "name"]],
+      "value": "admin@kct.ac.in"
+    }, {
+      "id": "cmd-3",
+      "comment": "Enter Admin Password",
+      "command": "type",
+      "target": "name=password",
+      "targets": [["name=password", "name"]],
+      "value": "Password123"
+    }, {
+      "id": "cmd-4",
+      "comment": "Click Login Button",
+      "command": "click",
+      "target": "css=button[type='submit']",
+      "targets": [["css=button[type='submit']", "css:finder"]],
+      "value": ""
+    }, {
+      "id": "cmd-5",
+      "comment": "Assert Dashboard Loaded",
+      "command": "waitForElementVisible",
+      "target": "css=.logo-text",
+      "targets": [["css=.logo-text", "css:finder"]],
+      "value": "5000"
+    }, {
+      "id": "cmd-6",
+      "comment": "Assert Header Logo Text",
+      "command": "assertText",
+      "target": "css=.logo-text",
+      "targets": [["css=.logo-text", "css:finder"]],
+      "value": "KCT LifeFlow"
+    }, {
+      "id": "cmd-7",
+      "comment": "Navigate to Requests Page",
+      "command": "open",
+      "target": "/requests",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "cmd-8",
+      "comment": "Click Post Emergency Request Tab",
+      "command": "click",
+      "target": "xpath=//button[contains(text(), 'Post Emergency Request')]",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "cmd-9",
+      "comment": "Enter Patient Name",
+      "command": "type",
+      "target": "name=patientName",
+      "targets": [["name=patientName", "name"]],
+      "value": "Senthil Kumar (SeleniumIDE)"
+    }, {
+      "id": "cmd-10",
+      "comment": "Select Blood Group",
+      "command": "select",
+      "target": "name=bloodGroup",
+      "targets": [["name=bloodGroup", "name"]],
+      "value": "label=O+"
+    }, {
+      "id": "cmd-11",
+      "comment": "Enter Hospital Name",
+      "command": "type",
+      "target": "name=hospital",
+      "targets": [["name=hospital", "name"]],
+      "value": "Sri Ramakrishna Hospital, Coimbatore"
+    }, {
+      "id": "cmd-12",
+      "comment": "Enter Units Required",
+      "command": "type",
+      "target": "name=unitsRequired",
+      "targets": [["name=unitsRequired", "name"]],
+      "value": "2"
+    }, {
+      "id": "cmd-13",
+      "comment": "Enter Contact Number",
+      "command": "type",
+      "target": "name=contactNumber",
+      "targets": [["name=contactNumber", "name"]],
+      "value": "9876543210"
+    }, {
+      "id": "cmd-14",
+      "comment": "Select Urgency",
+      "command": "select",
+      "target": "name=urgency",
+      "targets": [["name=urgency", "name"]],
+      "value": "label=High"
+    }, {
+      "id": "cmd-15",
+      "comment": "Submit Form",
+      "command": "click",
+      "target": "css=button[type='submit']",
+      "targets": [["css=button[type='submit']", "css:finder"]],
+      "value": ""
+    }, {
+      "id": "cmd-16",
+      "comment": "Wait For Table To Render",
+      "command": "waitForElementPresent",
+      "target": "css=.requests-log-table",
+      "targets": [["css=.requests-log-table", "css:finder"]],
+      "value": "6000"
+    }, {
+      "id": "cmd-17",
+      "comment": "Assert Saved Patient Name in Table",
+      "command": "assertText",
+      "target": "xpath=//table//td[contains(text(), 'Senthil Kumar (SeleniumIDE)')]",
+      "targets": [],
+      "value": "Senthil Kumar (SeleniumIDE)"
+    }]
+  }],
+  "suites": [{
+    "id": "suite-1",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["workflow-test-01"]
+  }],
+  "urls": ["https://blood-donation-management.onrender.com", "http://localhost:5173"],
+  "plugins": []
+}

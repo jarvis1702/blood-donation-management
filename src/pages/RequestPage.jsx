@@ -5,6 +5,8 @@ import { bloodRequestService } from '../services/bloodRequestService';
 import { cloudSync } from '../services/cloudSync';
 import BloodRequestForm from '../components/requests/BloodRequestForm';
 import DonorMatchingList from '../components/requests/DonorMatchingList';
+import Navbar from '../components/common/Navbar';
+import { notificationService } from '../services/notificationService';
 
 const RequestPage = () => {
   const navigate = useNavigate();
@@ -52,6 +54,18 @@ const RequestPage = () => {
     fetchRequests(true);
     setSelectedRequest(newRequest);
     setActiveTab('list');
+    
+    // Broadcast emergency notification (SCRUM-19)
+    try {
+      notificationService.addNotification({
+        title: `🚨 Emergency ${newRequest.bloodGroup} Blood Needed`,
+        message: `${newRequest.patientName} urgently needs ${newRequest.unitsRequired} Pint(s) at ${newRequest.hospital}.`,
+        type: 'emergency',
+        link: '/requests'
+      });
+    } catch (e) {
+      console.error('Notification error:', e);
+    }
   };
 
   const handleStatusChange = async (requestId, newStatus) => {
@@ -106,26 +120,10 @@ const RequestPage = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="dashboard-logo" onClick={() => navigate('/dashboard')} style={{cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.65rem'}}>
-          <img 
-            src="/kct-logo.png" 
-            alt="KCT Logo" 
-            style={{width: '36px', height: '36px', borderRadius: '6px', objectFit: 'contain'}} 
-          />
-          <span className="logo-text">KCT LifeFlow</span>
-        </div>
-        
-        <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-          <button onClick={() => navigate('/dashboard')} className="btn btn-outline btn-sm">
-            Dashboard
-          </button>
-          <button onClick={() => navigate('/profile')} className="btn btn-outline btn-sm">
-            Profile ({currentUserProfile?.role || 'User'})
-          </button>
-        </div>
-      </header>
+      {/* Header / Navbar */}
+      <Navbar activePage="/requests" />
+
+      {/* Main Request Workspace */}
 
       {/* Main Request Workspace */}
       <main className="dashboard-main layout-with-sidebar-panel">

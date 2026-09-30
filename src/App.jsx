@@ -5,6 +5,8 @@ import Register from './pages/auth/Register';
 import Dashboard from './pages/Dashboard';
 import RequestPage from './pages/RequestPage';
 import ProfilePage from './pages/ProfilePage';
+import CampsPage from './pages/CampsPage';
+import ClubPage from './pages/ClubPage';
 import { authService } from './services/authService';
 
 // Simple Route Protection Wrapper
@@ -59,6 +61,22 @@ function App() {
           element={
             <ProtectedRoute>
               <RequestPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/camps" 
+          element={
+            <ProtectedRoute>
+              <CampsPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/club" 
+          element={
+            <ProtectedRoute>
+              <ClubPage />
             </ProtectedRoute>
           } 
         />
