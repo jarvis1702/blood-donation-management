@@ -5,6 +5,7 @@ import { authService } from '../services/authService';
 import { bloodRequestService } from '../services/bloodRequestService';
 import { campService } from '../services/campService';
 import { donationHistoryService } from '../services/donationHistoryService';
+import { cloudSync } from '../services/cloudSync';
 
 const ReportsPage = () => {
   const navigate = useNavigate();
@@ -27,6 +28,12 @@ const ReportsPage = () => {
       const user = authService.getCurrentUserProfile() || authService.getCurrentUser();
       setCurrentUser(user);
       loadAllMetrics();
+
+      // Real-time live multi-device sync
+      const unsubscribe = cloudSync.subscribe(() => {
+        loadAllMetrics();
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

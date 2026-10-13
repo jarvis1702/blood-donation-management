@@ -28,6 +28,12 @@ const AdminPage = () => {
       const user = authService.getCurrentUserProfile() || authService.getCurrentUser();
       setCurrentUser(user);
       refreshData();
+
+      // Real-time live multi-device sync
+      const unsubscribe = cloudSync.subscribe(() => {
+        refreshData();
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

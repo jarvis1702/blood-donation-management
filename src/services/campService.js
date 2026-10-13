@@ -3,6 +3,8 @@
  * Manages campus blood donation camps, donor time-slot bookings, volunteer mobilization, and club governance.
  */
 
+import { cloudSync } from './cloudSync';
+
 const CAMPS_STORAGE_KEY = 'kct_blood_camps_db';
 const REGISTRATIONS_STORAGE_KEY = 'kct_camp_registrations_db';
 
@@ -171,6 +173,14 @@ export const campService = {
     saveRegistrationsDB(registrations);
     saveCampsDB(camps);
 
+    // Live multi-device cloud sync
+    try {
+      cloudSync.syncRegistration(newReg);
+      if (camp) cloudSync.syncCamp(camp);
+    } catch (e) {
+      console.warn('Cloud sync registration warning:', e);
+    }
+
     return {
       success: true,
       registration: newReg
@@ -204,6 +214,15 @@ export const campService = {
 
     const filtered = registrations.filter(r => r.id !== regId);
     saveRegistrationsDB(filtered);
+
+    // Live multi-device sync
+    try {
+      cloudSync.deleteRegistration(regId);
+      if (camp) cloudSync.syncCamp(camp);
+    } catch (e) {
+      console.warn('Cloud sync cancel registration warning:', e);
+    }
+
     return true;
   },
 
@@ -230,6 +249,7 @@ export const campService = {
       description: campData.description || 'Voluntary campus blood donation drive organized by YRC.',
       createdBy: createdByEmail || 'club@kct.ac.in',
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       slots: [
         { time: '09:00 AM - 10:30 AM', capacity: 50, booked: 0 },
         { time: '10:30 AM - 12:00 PM', capacity: 50, booked: 0 },
@@ -246,6 +266,13 @@ export const campService = {
     camps.unshift(newCamp);
     saveCampsDB(camps);
 
+    // Live multi-device cloud sync
+    try {
+      cloudSync.syncCamp(newCamp);
+    } catch (e) {
+      console.warn('Cloud sync camp creation warning:', e);
+    }
+
     return {
       success: true,
       camp: newCamp
@@ -257,7 +284,15 @@ export const campService = {
     const index = camps.findIndex(c => c.id === campId);
     if (index === -1) throw new Error('Camp not found');
     camps[index].status = newStatus;
+    camps[index].updatedAt = new Date().toISOString();
     saveCampsDB(camps);
+
+    try {
+      cloudSync.syncCamp(camps[index]);
+    } catch (e) {
+      console.warn('Cloud sync status warning:', e);
+    }
+
     return camps[index];
   },
 

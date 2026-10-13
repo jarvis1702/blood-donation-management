@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import { authService } from '../services/authService';
 import { donationHistoryService } from '../services/donationHistoryService';
+import { cloudSync } from '../services/cloudSync';
 
 const DonationHistoryPage = () => {
   const navigate = useNavigate();
@@ -44,6 +45,12 @@ const DonationHistoryPage = () => {
       const profile = authService.getCurrentUserProfile() || authService.getCurrentUser();
       setCurrentUser(profile);
       loadDonationData(profile.email, profile.bloodGroup);
+
+      // Live multi-device cloud listener
+      const unsubscribe = cloudSync.subscribe(() => {
+        loadDonationData(profile.email, profile.bloodGroup);
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

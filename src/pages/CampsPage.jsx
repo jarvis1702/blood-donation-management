@@ -4,6 +4,7 @@ import Navbar from '../components/common/Navbar';
 import { authService } from '../services/authService';
 import { campService } from '../services/campService';
 import { notificationService } from '../services/notificationService';
+import { cloudSync } from '../services/cloudSync';
 
 const CampsPage = () => {
   const navigate = useNavigate();
@@ -31,6 +32,12 @@ const CampsPage = () => {
       setCurrentUser(profile);
       setPhone(profile?.phone || '');
       loadCampsData(profile?.email);
+
+      // Real-time live multi-device sync subscription
+      const unsubscribe = cloudSync.subscribe(() => {
+        loadCampsData(profile?.email);
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

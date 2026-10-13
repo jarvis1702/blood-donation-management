@@ -5,6 +5,7 @@ import { authService } from '../services/authService';
 import { campService } from '../services/campService';
 import { bloodRequestService } from '../services/bloodRequestService';
 import { notificationService } from '../services/notificationService';
+import { cloudSync } from '../services/cloudSync';
 
 const ClubPage = () => {
   const navigate = useNavigate();
@@ -37,6 +38,12 @@ const ClubPage = () => {
       const profile = authService.getCurrentUserProfile();
       setCurrentUser(profile);
       refreshData();
+
+      // Real-time live multi-device cloud listener
+      const unsubscribe = cloudSync.subscribe(() => {
+        refreshData();
+      });
+      return () => unsubscribe();
     }
   }, [navigate]);
 

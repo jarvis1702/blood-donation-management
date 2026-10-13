@@ -6,6 +6,7 @@
 
 import { authService } from './authService';
 import { notificationService } from './notificationService';
+import { cloudSync } from './cloudSync';
 
 const HISTORY_STORAGE_KEY = 'kct_donation_history_db';
 
@@ -213,6 +214,13 @@ export const donationHistoryService = {
 
     all.unshift(newRecord);
     saveDonationsDB(all);
+
+    // Live multi-device cloud sync
+    try {
+      cloudSync.syncDonation(newRecord);
+    } catch (e) {
+      console.warn('Cloud sync donation warning:', e);
+    }
 
     // Update donor profile's lastDonationDate and eligibility in users DB
     try {
