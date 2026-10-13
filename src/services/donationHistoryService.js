@@ -209,7 +209,8 @@ export const donationHistoryService = {
       bloodPressure: data.bloodPressure || '120/80 mmHg',
       verified: true,
       verifiedBy: data.verifiedBy || 'Youth Red Cross (YRC) Verification Desk',
-      remarks: data.remarks || 'Voluntary donation recorded successfully.'
+      remarks: data.remarks || 'Voluntary donation recorded successfully.',
+      updatedAt: new Date().toISOString()
     };
 
     all.unshift(newRecord);

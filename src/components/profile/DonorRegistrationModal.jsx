@@ -99,10 +99,11 @@ const DonorRegistrationModal = ({ isOpen, onClose, userEmail, onDonorRegistered 
                 value={formData.weight}
                 onChange={handleChange}
                 placeholder="e.g. 62"
-                min="45"
+                min="30"
                 className="form-input"
                 required
               />
+              <span className="field-hint">Min 50 kg required for active donor eligibility.</span>
             </div>
           </div>
 
@@ -134,7 +135,7 @@ const DonorRegistrationModal = ({ isOpen, onClose, userEmail, onDonorRegistered 
                 required
               />
               <span style={{fontSize: '0.85rem', color: 'var(--color-text-main)'}}>
-                I confirm that I weigh over 45 kg, am in good health, and agree to be listed in the KCT Blood Donation Database.
+                I confirm that I am in good health, weigh at least 50 kg for active donation, and agree to be listed in the KCT Blood Donation Database.
               </span>
             </label>
           </div>

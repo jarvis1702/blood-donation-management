@@ -9,11 +9,12 @@ function getRequestsDB() {
 }
 
 import { cloudSync } from './cloudSync';
+import { checkBloodCompatibility, validateBloodRequestUnits } from '../utils/validation';
 
 // Helper to save requests to localStorage and push to cloud
 function saveRequestsDB(db) {
   localStorage.setItem('blood_requests_db', JSON.stringify(db));
-  cloudSync.pushToCloud();
+  cloudSync.notifyListeners();
 }
 
 // Helper to get users database (donors)
@@ -122,10 +123,11 @@ export const bloodRequestService = {
     if (!data.hospital || !data.hospital.trim()) {
       throw new Error('Hospital name is required.');
     }
-    const units = parseInt(data.unitsRequired, 10);
-    if (isNaN(units) || units <= 0) {
-      throw new Error('Units required must be a positive number.');
+    const unitCheck = validateBloodRequestUnits(data.unitsRequired);
+    if (!unitCheck.valid) {
+      throw new Error(unitCheck.error || 'Units required must be a valid number.');
     }
+    const units = unitCheck.units;
     if (!data.contactNumber || !data.contactNumber.trim()) {
       throw new Error('Contact number is required.');
     }
@@ -145,11 +147,19 @@ export const bloodRequestService = {
       urgency: data.urgency,
       status: 'Pending',
       createdBy: userEmail ? userEmail.toLowerCase().trim() : 'suresh@kct.ac.in',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     requests.unshift(newRequest);
     saveRequestsDB(requests);
+
+    // Live multi-device cloud sync
+    try {
+      cloudSync.syncRequest(newRequest);
+    } catch (e) {
+      console.warn('Cloud sync request warning:', e);
+    }
 
     return {
       success: true,
@@ -185,18 +195,32 @@ export const bloodRequestService = {
     const donorList = Object.values(users);
     
     // Filter by:
-    // 1. Blood group compatibility (for this story, exact match)
+    // 1. Blood group compatibility (exact match or clinically compatible Rh match)
     // 2. Availability == 'Available'
     // 3. Eligibility == 'Eligible'
-    const matches = donorList.filter(donor => {
-      // Must have blood group field (mock donors do)
-      if (!donor.bloodGroup) return false;
-      
-      const isBloodMatch = donor.bloodGroup === requestedBloodGroup;
+    const matchingDonors = [];
+    for (const donor of donorList) {
+      if (!donor.bloodGroup) continue;
       const isAvailable = donor.availability === 'Available';
       const isEligible = donor.eligibility === 'Eligible';
-      
-      return isBloodMatch && isAvailable && isEligible;
+      if (!isAvailable || !isEligible) continue;
+
+      const isExact = donor.bloodGroup === requestedBloodGroup;
+      const isCompatible = checkBloodCompatibility(donor.bloodGroup, requestedBloodGroup);
+
+      if (isExact || isCompatible) {
+        matchingDonors.push({
+          ...donor,
+          matchType: isExact ? 'Exact Match' : 'Compatible Match'
+        });
+      }
+    }
+
+    // Prioritize exact matches first
+    const matches = matchingDonors.sort((a, b) => {
+      if (a.matchType === 'Exact Match' && b.matchType !== 'Exact Match') return -1;
+      if (a.matchType !== 'Exact Match' && b.matchType === 'Exact Match') return 1;
+      return 0;
     });
 
     return {
@@ -217,7 +241,15 @@ export const bloodRequestService = {
     if (index === -1) throw new Error('Request not found.');
 
     requests[index].status = newStatus;
+    requests[index].updatedAt = new Date().toISOString();
     saveRequestsDB(requests);
+
+    // Live multi-device cloud sync
+    try {
+      cloudSync.syncRequest(requests[index]);
+    } catch (e) {
+      console.warn('Cloud sync update request status warning:', e);
+    }
 
     return {
       success: true,
@@ -253,9 +285,17 @@ export const bloodRequestService = {
 
     req.volunteeredDonors = volunteered;
     req.status = 'Accepted';
+    req.updatedAt = new Date().toISOString();
 
     requests[index] = req;
     saveRequestsDB(requests);
+
+    // Live multi-device cloud sync
+    try {
+      cloudSync.syncRequest(req);
+    } catch (e) {
+      console.warn('Cloud sync respondToRequest warning:', e);
+    }
 
     return {
       success: true,

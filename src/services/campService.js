@@ -157,7 +157,8 @@ export const campService = {
       selectedSlot: data.selectedSlot || '',
       volunteerRole: data.volunteerRole || '',
       bloodGroup: data.bloodGroup || '',
-      registeredAt: new Date().toISOString()
+      registeredAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     // Update camp count
@@ -168,6 +169,7 @@ export const campService = {
       const needObj = camp.volunteerNeeds?.find(v => v.role === data.volunteerRole);
       if (needObj) needObj.filled = (needObj.filled || 0) + 1;
     }
+    camp.updatedAt = new Date().toISOString();
 
     registrations.push(newReg);
     saveRegistrationsDB(registrations);
@@ -209,6 +211,7 @@ export const campService = {
         const need = camp.volunteerNeeds?.find(v => v.role === reg.volunteerRole);
         if (need && need.filled > 0) need.filled -= 1;
       }
+      camp.updatedAt = new Date().toISOString();
       saveCampsDB(camps);
     }
 

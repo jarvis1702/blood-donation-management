@@ -42,7 +42,6 @@ const Dashboard = () => {
 
   const loadAllDonors = () => {
     try {
-      const res = bloodRequestService.getMatchingDonors ? authService.getUserProfile('suresh@kct.ac.in') : null;
       // Fetch all users from database
       const db = JSON.parse(localStorage.getItem('blood_donation_users_db') || '{}');
       const donors = Object.values(db).filter(u => u.isDonor || u.bloodGroup);

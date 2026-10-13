@@ -115,6 +115,7 @@ export const adminService = {
 
     const oldRole = db[emailKey].role || 'Student';
     db[emailKey].role = newRole;
+    db[emailKey].updatedAt = new Date().toISOString();
     localStorage.setItem('blood_donation_users_db', JSON.stringify(db));
 
     // Sync to cloud
@@ -150,6 +151,7 @@ export const adminService = {
     const newStatus = currentStatus === 'Active' ? 'Suspended' : 'Active';
     
     db[emailKey].status = newStatus;
+    db[emailKey].updatedAt = new Date().toISOString();
     localStorage.setItem('blood_donation_users_db', JSON.stringify(db));
 
     // Sync to cloud
@@ -185,6 +187,7 @@ export const adminService = {
     const newVerified = !currentVerified;
     
     db[emailKey].isVerifiedDonor = newVerified;
+    db[emailKey].updatedAt = new Date().toISOString();
     localStorage.setItem('blood_donation_users_db', JSON.stringify(db));
 
     try {

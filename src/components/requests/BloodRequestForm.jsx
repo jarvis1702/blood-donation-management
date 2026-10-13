@@ -48,6 +48,8 @@ const BloodRequestForm = ({ onRequestCreated }) => {
       errs.unitsRequired = 'Units required is required';
     } else if (isNaN(units) || units <= 0) {
       errs.unitsRequired = 'Must be a number greater than 0';
+    } else if (units > 10) {
+      errs.unitsRequired = 'Maximum 10 units allowed per single emergency request';
     }
     
     if (!formData.contactNumber || formData.contactNumber.trim() === '') {

@@ -137,7 +137,7 @@ const ReportsPage = () => {
   const exportRequestsCSV = () => {
     const headers = ['Request ID,Patient Name,Blood Group,Units,Hospital,Urgency,Status,Contact Phone,Created Date'];
     const rows = requests.map(r => 
-      `"${r.id || ''}","${r.patientName || ''}","${r.bloodGroup || ''}","${r.units || ''}","${r.hospital || ''}","${r.urgency || ''}","${r.status || ''}","${r.contactPhone || ''}","${r.createdAt || ''}"`
+      `"${r.id || ''}","${r.patientName || ''}","${r.bloodGroup || ''}","${r.unitsRequired || r.units || ''}","${r.hospital || ''}","${r.urgency || ''}","${r.status || ''}","${r.contactNumber || r.contactPhone || ''}","${r.createdAt || ''}"`
     );
     downloadCSV([headers, ...rows].join('\n'), 'KCT_LifeFlow_Blood_Requests.csv');
   };

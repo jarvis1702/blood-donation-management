@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { bloodRequestService } from '../../services/bloodRequestService';
 import { authService } from '../../services/authService';
+import { checkBloodCompatibility } from '../../utils/validation';
 
 const DonorMatchingList = ({ request, onClose, onRequestUpdated }) => {
   const [matchingData, setMatchingData] = useState({
@@ -81,9 +82,10 @@ const DonorMatchingList = ({ request, onClose, onRequestUpdated }) => {
   };
 
   // Eligibility check for logged-in user to accept
+  const isCompatible = checkBloodCompatibility(currentUserProfile?.bloodGroup, request.bloodGroup);
   const isUserMatch = currentUserProfile && 
     currentUserProfile.isDonor &&
-    currentUserProfile.bloodGroup === request.bloodGroup &&
+    isCompatible &&
     currentUserProfile.availability === 'Available' &&
     currentUserProfile.eligibility === 'Eligible';
 
@@ -151,7 +153,7 @@ const DonorMatchingList = ({ request, onClose, onRequestUpdated }) => {
               ❤️ You are Eligible to Donate for this Request!
             </span>
             <span style={{fontSize: '0.75rem', color: 'var(--color-text-muted)'}}>
-              Your blood group ({currentUserProfile.bloodGroup}) matches this emergency demand.
+              Your blood group ({currentUserProfile.bloodGroup}) is clinically compatible with this demand ({request.bloodGroup}).
             </span>
           </div>
 
@@ -262,7 +264,10 @@ const DonorMatchingList = ({ request, onClose, onRequestUpdated }) => {
                       </button>
                     </div>
 
-                    <div className="donor-card-status-badges">
+                    <div className="donor-card-status-badges" style={{display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center'}}>
+                      <span className={`status-badge ${donor.matchType === 'Exact Match' ? 'status-eligible' : 'badge-info'}`} style={{fontSize: '0.7rem'}}>
+                        {donor.matchType === 'Exact Match' ? '🎯 Exact Match' : '🧬 Compatible Rh Match'}
+                      </span>
                       <span className="status-badge status-available">⚡ {donor.availability}</span>
                       <span className="status-badge status-eligible">🛡️ {donor.eligibility}</span>
                     </div>

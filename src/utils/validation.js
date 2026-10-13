@@ -80,3 +80,35 @@ export const validateConfirmPassword = (password, confirmPassword) => {
   }
   return null;
 };
+
+/**
+ * Checks clinical compatibility between donor blood group and recipient blood group
+ * @param {string} donorGroup 
+ * @param {string} recipientGroup 
+ * @returns {boolean} True if compatible for red cell transfusion
+ */
+export const checkBloodCompatibility = (donorGroup, recipientGroup) => {
+  if (!donorGroup || !recipientGroup) return false;
+  if (donorGroup === 'O-') return true; // Universal donor
+  if (recipientGroup === 'AB+') return true; // Universal recipient
+  if (donorGroup === recipientGroup) return true; // Exact match
+  
+  // Rh & Group Compatibility rules
+  if (donorGroup === 'O+' && recipientGroup.endsWith('+')) return true;
+  if (donorGroup === 'A-' && (recipientGroup === 'A+' || recipientGroup === 'AB+' || recipientGroup === 'AB-')) return true;
+  if (donorGroup === 'B-' && (recipientGroup === 'B+' || recipientGroup === 'AB+' || recipientGroup === 'AB-')) return true;
+
+  return false;
+};
+
+/**
+ * Validates requested blood donation units
+ * @param {number|string} units 
+ * @returns {{ valid: boolean, units?: number, error?: string }}
+ */
+export const validateBloodRequestUnits = (units) => {
+  const parsed = parseInt(units, 10);
+  if (isNaN(parsed) || parsed <= 0) return { valid: false, error: 'Units must be a positive integer' };
+  if (parsed > 10) return { valid: false, error: 'Maximum 10 units allowed per single emergency request' };
+  return { valid: true, units: parsed };
+};

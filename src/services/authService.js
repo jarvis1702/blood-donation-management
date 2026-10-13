@@ -150,7 +150,11 @@ export const authService = {
       name: name.trim(),
       email: emailKey,
       passwordHash,
-      createdAt: new Date().toISOString()
+      role: 'Student',
+      status: 'Active',
+      isDonor: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     
     saveUsersDB(db, emailKey);
@@ -272,7 +276,8 @@ export const authService = {
       phone: profileData.phone ? profileData.phone.trim() : (user.phone || ''),
       department: profileData.department ? profileData.department.trim() : (user.department || ''),
       gender: profileData.gender || user.gender || '',
-      role: profileData.role || user.role || 'Student'
+      role: profileData.role || user.role || 'Student',
+      updatedAt: new Date().toISOString()
     };
 
     saveUsersDB(db, emailKey);
@@ -304,8 +309,11 @@ export const authService = {
 
     if (!user) throw new Error('User account not found.');
 
-    // Calculate 90-day eligibility cooldown automatically
+    // Calculate 90-day eligibility cooldown and weight criteria automatically
     let eligibility = 'Eligible';
+    if (donorData.weight && parseFloat(donorData.weight) < 50) {
+      eligibility = 'Ineligible';
+    }
     if (donorData.lastDonationDate) {
       const lastDonated = new Date(donorData.lastDonationDate);
       const now = new Date();
@@ -323,7 +331,8 @@ export const authService = {
       weight: donorData.weight || '',
       lastDonationDate: donorData.lastDonationDate || '',
       availability: user.availability || 'Available',
-      eligibility: eligibility
+      eligibility: eligibility,
+      updatedAt: new Date().toISOString()
     };
 
     saveUsersDB(db, emailKey);
@@ -352,7 +361,8 @@ export const authService = {
 
     db[emailKey] = {
       ...user,
-      availability: status
+      availability: status,
+      updatedAt: new Date().toISOString()
     };
 
     saveUsersDB(db, emailKey);
