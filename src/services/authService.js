@@ -186,6 +186,10 @@ export const authService = {
     if (user.passwordHash !== loginPasswordHash) {
       throw new Error('Login failed: Invalid email or password.');
     }
+
+    if (user.status === 'Suspended') {
+      throw new Error('Account suspended: Your access has been restricted by KCT Administration (admin@kct.ac.in).');
+    }
     
     // Generate a mock JWT token and store session
     const mockToken = `mock-jwt-session-${btoa(emailKey)}-${Date.now()}`;

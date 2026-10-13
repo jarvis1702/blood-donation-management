@@ -266,6 +266,35 @@ const Dashboard = () => {
                 </a>
               </li>
               <li>
+                <a href="/history" onClick={(e) => { e.preventDefault(); navigate('/history'); }}>
+                  <span className="resource-icon">📜</span>
+                  <div>
+                    <span className="resource-title">Donation History & Certificates (SCRUM-23)</span>
+                    <span className="resource-desc">Check 90-day cooldown status, impact metrics, and official YRC certificates.</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="/reports" onClick={(e) => { e.preventDefault(); navigate('/reports'); }}>
+                  <span className="resource-icon">📊</span>
+                  <div>
+                    <span className="resource-title">Reports & Supply Analytics (SCRUM-24)</span>
+                    <span className="resource-desc">Department donor metrics, blood group distribution, and CSV export.</span>
+                  </div>
+                </a>
+              </li>
+              {isAdminOrClub && (
+                <li>
+                  <a href="/admin" onClick={(e) => { e.preventDefault(); navigate('/admin'); }}>
+                    <span className="resource-icon">⚙️</span>
+                    <div>
+                      <span className="resource-title">Administration Console (SCRUM-25)</span>
+                      <span className="resource-desc">User role management, account suspension toggle, and audit log.</span>
+                    </div>
+                  </a>
+                </li>
+              )}
+              <li>
                 <a href="/club" onClick={(e) => { e.preventDefault(); navigate('/club'); }}>
                   <span className="resource-icon">🛡️</span>
                   <div>

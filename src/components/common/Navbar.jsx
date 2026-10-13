@@ -26,10 +26,16 @@ const Navbar = ({ activePage }) => {
 
   const navLinks = [
     { label: 'Dashboard', path: '/dashboard', icon: '📊' },
-    { label: 'Blood Requests', path: '/requests', icon: '🩸' },
-    { label: 'Donation Camps', path: '/camps', icon: '🎪' },
-    { label: 'YRC Club Portal', path: '/club', icon: '🛡️', badge: isAdminOrClub ? 'Admin' : null }
+    { label: 'Requests', path: '/requests', icon: '🩸' },
+    { label: 'Camps', path: '/camps', icon: '🎪' },
+    { label: 'History', path: '/history', icon: '📜' },
+    { label: 'Reports', path: '/reports', icon: '📈' },
+    { label: 'YRC Club', path: '/club', icon: '🛡️', badge: isAdminOrClub ? 'Club' : null }
   ];
+
+  if (isAdminOrClub) {
+    navLinks.push({ label: 'Admin', path: '/admin', icon: '⚙️', badge: 'Gov' });
+  }
 
   return (
     <header className="dashboard-header modern-navbar">

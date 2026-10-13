@@ -7,6 +7,10 @@ import RequestPage from './pages/RequestPage';
 import ProfilePage from './pages/ProfilePage';
 import CampsPage from './pages/CampsPage';
 import ClubPage from './pages/ClubPage';
+import DonationHistoryPage from './pages/DonationHistoryPage';
+import ReportsPage from './pages/ReportsPage';
+import AdminPage from './pages/AdminPage';
+import AIChatbotModal from './components/ai/AIChatbotModal';
 import { authService } from './services/authService';
 
 // Simple Route Protection Wrapper
@@ -14,7 +18,13 @@ const ProtectedRoute = ({ children }) => {
   if (!authService.isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
-  return children;
+  return (
+    <>
+      {children}
+      {/* Global AI Chatbot floating assistant for all authenticated pages */}
+      <AIChatbotModal />
+    </>
+  );
 };
 
 // Simple Public-Only Route Wrapper (redirect to dashboard if logged in)
@@ -73,10 +83,34 @@ function App() {
           } 
         />
         <Route 
+          path="/history" 
+          element={
+            <ProtectedRoute>
+              <DonationHistoryPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/reports" 
+          element={
+            <ProtectedRoute>
+              <ReportsPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
           path="/club" 
           element={
             <ProtectedRoute>
               <ClubPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute>
+              <AdminPage />
             </ProtectedRoute>
           } 
         />
