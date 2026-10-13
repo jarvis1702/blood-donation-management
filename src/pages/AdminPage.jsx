@@ -129,16 +129,12 @@ const AdminPage = () => {
     <div className="dashboard-container">
       <Navbar activePage="/admin" />
 
-      <main className="dashboard-content">
+      <main className="dashboard-main">
         {/* Header */}
-        <div className="page-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="requests-heading-section page-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
           <div>
-            <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span>⚙️</span> Institutional Administration & Governance
-            </h1>
-            <p className="page-subtitle">
-              Manage student & faculty user permissions, oversee donor verification badges, and inspect security audit logs.
-            </p>
+            <h1>Institutional Administration & Governance</h1>
+            <p>Manage student & faculty user permissions, oversee donor verification badges, and inspect security audit logs.</p>
           </div>
 
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
@@ -270,8 +266,8 @@ const AdminPage = () => {
             </div>
 
             {/* Users Table */}
-            <div style={{ overflowX: 'auto' }}>
-              <table className="donors-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <div className="donors-table-wrapper">
+              <table className="donors-table">
                 <thead>
                   <tr style={{ borderBottom: '2px solid #e0e0e0', textAlign: 'left', background: '#f5f5f5' }}>
                     <th style={{ padding: '0.75rem' }}>User / Email</th>
@@ -396,8 +392,8 @@ const AdminPage = () => {
               </select>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-              <table className="donors-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div className="donors-table-wrapper">
+              <table className="donors-table">
                 <thead>
                   <tr style={{ borderBottom: '2px solid #e0e0e0', textAlign: 'left', background: '#f5f5f5' }}>
                     <th style={{ padding: '0.65rem' }}>Log ID</th>

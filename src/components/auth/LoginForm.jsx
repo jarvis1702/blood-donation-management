@@ -99,6 +99,39 @@ const LoginForm = () => {
         <p>Access your KCT Blood Donor portal</p>
       </div>
 
+      {/* Quick Demo Credentials for Fast Evaluation */}
+      <div style={{ marginBottom: '1.25rem', padding: '0.75rem', background: 'var(--color-bg-base)', borderRadius: 'var(--radius-md)', border: '1px dashed var(--color-border)' }}>
+        <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          ⚡ 1-Click Demo Login:
+        </div>
+        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+          <button 
+            type="button" 
+            className="btn btn-outline btn-sm"
+            style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+            onClick={() => setFormData({ email: 'suresh@kct.ac.in', password: 'Password123' })}
+          >
+            👤 Student
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-outline btn-sm"
+            style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+            onClick={() => setFormData({ email: 'club@kct.ac.in', password: 'Password123' })}
+          >
+            🛡️ YRC Club
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-outline btn-sm"
+            style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+            onClick={() => setFormData({ email: 'admin@kct.ac.in', password: 'Password123' })}
+          >
+            ⚙️ Admin Cell
+          </button>
+        </div>
+      </div>
+
 
 
       {submitError && (

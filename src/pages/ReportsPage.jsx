@@ -171,16 +171,12 @@ const ReportsPage = () => {
     <div className="dashboard-container">
       <Navbar activePage="/reports" />
 
-      <main className="dashboard-content">
+      <main className="dashboard-main">
         {/* Reports Header & Actions */}
-        <div className="page-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="requests-heading-section page-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
           <div>
-            <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span>📊</span> Institutional Reports & Blood Analytics
-            </h1>
-            <p className="page-subtitle">
-              Real-time donor pool metrics, blood supply distribution, camp mobilization efficiency, and official CSV exports.
-            </p>
+            <h1>Institutional Reports & Blood Analytics</h1>
+            <p>Real-time donor pool metrics, blood supply distribution, camp mobilization efficiency, and official CSV exports.</p>
           </div>
 
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
@@ -314,8 +310,8 @@ const ReportsPage = () => {
             <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>🏛️</span> Department-Wise Donor Mobilization
             </h2>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="donors-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <div className="donors-table-wrapper">
+              <table className="donors-table">
                 <thead>
                   <tr style={{ borderBottom: '2px solid #e0e0e0', textAlign: 'left', background: '#f5f5f5' }}>
                     <th style={{ padding: '0.75rem' }}>Department</th>
@@ -401,8 +397,8 @@ const ReportsPage = () => {
             <span>🏥</span> Recent Blood Request Fulfillment Log
           </h2>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table className="donors-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+          <div className="donors-table-wrapper">
+            <table className="donors-table">
               <thead>
                 <tr style={{ borderBottom: '2px solid #e0e0e0', textAlign: 'left', background: '#f5f5f5' }}>
                   <th style={{ padding: '0.75rem' }}>Request ID</th>

@@ -103,16 +103,12 @@ const DonationHistoryPage = () => {
     <div className="dashboard-container">
       <Navbar activePage="/history" />
 
-      <main className="dashboard-content">
+      <main className="dashboard-main">
         {/* Page Header */}
-        <div className="page-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="requests-heading-section page-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
           <div>
-            <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span>📜</span> Personal Donation History & Lifesaving Impact
-            </h1>
-            <p className="page-subtitle">
-              Verify your past blood donations, monitor your 90-day cooldown status, and download official YRC certificates.
-            </p>
+            <h1>Personal Donation History & Impact</h1>
+            <p>Verify your past blood donations, monitor your 90-day cooldown status, and download official YRC certificates.</p>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button 

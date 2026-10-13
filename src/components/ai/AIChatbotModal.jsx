@@ -16,6 +16,28 @@ const compatibilityMatrix = {
   'AB+': { canDonateTo: ['AB+'], canReceiveFrom: ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'] }
 };
 
+// Helper to render bold text and bullet points cleanly
+const formatMessageText = (text) => {
+  if (!text) return null;
+  const lines = text.split('\n');
+  return lines.map((line, lIdx) => {
+    if (!line.trim()) {
+      return <div key={lIdx} style={{ height: '0.35rem' }} />;
+    }
+    const parts = line.split(/(\*\*.*?\*\*)/g);
+    return (
+      <div key={lIdx} style={{ marginBottom: '0.15rem' }}>
+        {parts.map((part, pIdx) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={pIdx}>{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        })}
+      </div>
+    );
+  });
+};
+
 const AIChatbotModal = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -264,8 +286,8 @@ const AIChatbotModal = () => {
                 )}
 
                 <div className={`ai-message-bubble ${msg.sender === 'user' ? 'user-bubble' : 'bot-bubble'}`}>
-                  <div style={{ whiteSpace: 'pre-line', fontSize: '0.88rem', lineHeight: 1.45 }}>
-                    {msg.text}
+                  <div style={{ fontSize: '0.88rem', lineHeight: 1.45 }}>
+                    {formatMessageText(msg.text)}
                   </div>
 
                   {msg.action && (
